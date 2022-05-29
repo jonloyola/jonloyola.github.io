@@ -22,12 +22,12 @@
 
 
 <meta name="author" content="Jonathan Loyola" />
-<meta name="description" content="This attempts to build a good workflow for simulating in Python." />
+<meta name="description" content="An attempt to build a good workflow for simulating in Python. The bicycle model is a ubiquitous representation of a passenger vehicle loaded with utility for such a small and simple model. This particular schematic includes rear-wheel steering. The model can be represented with a bond graph as shown below …" />
 <meta name="keywords" content="">
 
 <meta property="og:site_name" content="Jonathan Loyola"/>
 <meta property="og:title" content="First Simulation: Bicycle Model"/>
-<meta property="og:description" content="This attempts to build a good workflow for simulating in Python."/>
+<meta property="og:description" content="An attempt to build a good workflow for simulating in Python. The bicycle model is a ubiquitous representation of a passenger vehicle loaded with utility for such a small and simple model. This particular schematic includes rear-wheel steering. The model can be represented with a bond graph as shown below …"/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:url" content="./first-simulation-bicycle-model.html"/>
 <meta property="og:type" content="article"/>
@@ -82,7 +82,8 @@
 
 
   <div>
-    <p>The bicycle model is a ubiquitous representation of a passenger vehicle 
+    <h3>An attempt to build a good workflow for simulating in Python.</h3>
+<p>The bicycle model is a ubiquitous representation of a passenger vehicle 
 loaded with utility for such a small and simple model.  This particular
 schematic includes rear-wheel steering.</p>
 <p><img alt="Photo" src="./bicycle car images/schematic.png"></p>
@@ -125,7 +126,7 @@ outputs we care about.</p>
 <p><img alt="Photo" src="./bicycle car images/signals.png"></p>
 <p>The results to a step steer are shown.  The lateral acceleration plot shows an
 interesting kink it the response.  The lateral acceleration is
-<span class="math">\(a_y=\dot{v}+u_0\omega_z\)</span>, where <span class="math">\(\dot{v}\)</span> is a function of the input.
+<span class="math">\(a_y=\dot{v}+u_0\omega_z\)</span>, where <span class="math">\(\dot{v}\)</span> is a direct function of the input.
 Therefore, the step steer shape shows up in the response.  In reality a step
 input is not realizable, it would be filtered either from a human or steering
 robot.</p>
