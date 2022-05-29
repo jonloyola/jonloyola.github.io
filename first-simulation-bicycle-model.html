@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>First Simulation: Bicycle Model</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="This attempts to build a good workflow for simulating in Python." />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="./">Jonathan Loyola</a></h1>
+                <nav><ul>
+                    <li><a href="./pages/about-me.html">About Me</a></li>
+                    <li><a href="./pages/contact.html">Contact</a></li>
+                    <li><a href="./pages/publications.html">Publications</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="./first-simulation-bicycle-model.html" rel="bookmark"
+           title="Permalink to First Simulation: Bicycle Model">First Simulation: Bicycle Model</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2022-05-27T12:00:00-07:00">
+                Published: Fri 27 May 2022
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="./author/jonathan-loyola.html">Jonathan Loyola</a>
+        </address>
+<p>In <a href="./category/article.html">Article</a>.</p>
+
+</footer><!-- /.post-info -->      <p>The bicycle model is a ubiquitous representation of a passenger vehicle 
+loaded with utility for such a small and simple model.  This particular
+schematic includes rear-wheel steering.</p>
+<p><img alt="Photo" src="./bicycle car images/schematic.png"></p>
+<p>The model can be represented with a bond graph as shown below.</p>
+<p><img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
+<h1>Solving ODEs in Python</h1>
+<p>Integrating a set of ordinary differential equations can be straight forward
+once the equations of motion are available.  However, many solvers simply
+output the states of the system.  More often than not, we may be interested in
+intermediate equations such as forces, or additional equations such as
+displacements and accelerations.  This often requires a two step solution.</p>
+<ol>
+<li>Integrate the EOM and generate the solution, i.e. the states</li>
+<li>Feed the solved states and time samples back to the EOM and save the
+additional outputs we are interested in.</li>
+</ol>
+<p>For ODEs, the function used is scipy.integrate.solve_ivp which uses a 
+Runge-Kutta method with variable time step.</p>
+<p>One simple method is to define a variable which will change what return statement
+is used.  The choice could be either the differential outputs needed for 
+solve_ivp or the additional outputs we desire when marching through the
+solutions.  The variable will be non-local to the procedure, so Python will
+simply look at the parent environment.  It can look something like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">def</span> <span class="nv">fun</span><span class="ss">(</span><span class="nv">t</span>,<span class="nv">x</span><span class="ss">)</span>
+    <span class="nv">dx</span> <span class="o">=</span> <span class="nv">equationsOfMotion</span>
+
+    <span class="k">if</span> <span class="nv">IS_INTEGRATED</span> <span class="nv">is</span> <span class="nv">True</span>
+        <span class="k">return</span> <span class="nv">dx</span>
+    <span class="k">else</span>
+        <span class="nv">extraOutputs</span> <span class="o">=</span> <span class="nv">otherEquations</span>
+        <span class="k">return</span> <span class="nv">extraOutputs</span>
+
+<span class="nv">IS_INTEGRATED</span> <span class="o">=</span> <span class="nv">True</span>
+<span class="nv">sol</span> <span class="o">=</span> <span class="nv">integrate</span>.<span class="nv">solve_ivp</span><span class="ss">(</span><span class="nv">fun</span>,<span class="nv">tspan</span>,<span class="nv">x0</span><span class="ss">)</span>
+</code></pre></div>
+
+<p>Then a for loop can step through time and the states to output the additional
+outputs we care about.</p>
+<h1>Bicycle model results</h1>
+<p><img alt="Photo" src="./bicycle car images/signals.png"></p>
+<p>The results to a step steer are shown.  The lateral acceleration plot shows an
+interesting kink it the response.  The lateral acceleration is
+<span class="math">\(a_y=\dot{v}+u_0\omega_z\)</span>, where <span class="math">\(\dot{v}\)</span> is a function of the input.
+Therefore, the step steer shape shows up in the response.  In reality a step
+input is not realizable, it would be filtered either from a human or steering
+robot.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://hce.ucdavis.edu">Hyundai Center of Excellence</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://www.linkedin.com/in/jonathan-loyola-45411529/">LinkedIn</a></li>
+                            <li><a href="https://github.com/jonloyola">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="generator" content="Pelican" />
-        <title>Bicycle Car</title>
+        <title>Bicycle Model</title>
         <link rel="stylesheet" href="./theme/css/main.css" />
         <meta name="description" content="Simulation a planar vehicle model using Python." />
 </head>
@@ -22,8 +22,8 @@
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="./bicycle-car.html" rel="bookmark"
-           title="Permalink to Bicycle Car">Bicycle Car</a></h1>
+        <a href="./bicycle-model.html" rel="bookmark"
+           title="Permalink to Bicycle Model">Bicycle Model</a></h1>
     </header>
 
     <div class="entry-content">
@@ -37,13 +37,41 @@
         </address>
 <p>In <a href="./category/misc.html">misc</a>.</p>
 
-</footer><!-- /.post-info -->      <p>They
-<img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
+</footer><!-- /.post-info -->      <p>The bicycle model is a ubiquitous representation of a passenger vehicle 
+loaded with utility for such a small and simple model.  This particular
+schematic includesrear-wheel steering.</p>
 <p><img alt="Photo" src="./bicycle car images/schematic.png"></p>
-<p>Here we go</p>
-<p>Yes lots</p>
-<p>WE keep going</p>
-<p>smuth</p>
+<p>The model can be represented with a bond graph as shown below.</p>
+<p><img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
+<h1>Solving ODEs in Python</h1>
+<p>Integrating a set of ordinary differential equations can be straight forward
+once the equations of motion are available.  However, many solvers simply
+output the states of the system.  More often than not, we may be interested in
+intermediate equations such as forces, or additional equations such as
+displacements and accelerations.  This often requires a two step solution.</p>
+<ol>
+<li>Integrate the EOM and generate the solutions, aka the states</li>
+<li>Feed the solved states and time samples back to the EOM and save the
+additional outputs we are interested in.</li>
+</ol>
+<p>For ODEs, the function used is scipy.integrate.solve_ivp which uses a 
+Runge-Kutta method with variable time step.</p>
+<p>One can simply define a variable which will change what the return statement
+will be.  Then the return could be either the differential outputs needed for 
+solve_ivp or the additional outputs we desire when marching through the
+solutions.  The variable will be non-local to the procedure, so Python will
+simply look at the parent environment.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">IS_INTEGRATED</span> <span class="o">=</span> <span class="nv">True</span>
+<span class="nv">def</span> <span class="nv">fun</span><span class="ss">(</span><span class="nv">t</span>,<span class="nv">x</span><span class="ss">)</span>:
+
+    <span class="nv">equationsOfMotion</span>
+
+    <span class="k">if</span> <span class="nv">IS_INTEGRATED</span> <span class="nv">is</span> <span class="nv">True</span>
+        <span class="k">return</span> <span class="nv">dx</span>
+    <span class="k">else</span>
+        <span class="nv">extraOutputs</span>
+        <span class="k">return</span> <span class="nv">extraOutputs</span>
+</code></pre></div>
     </div><!-- /.entry-content -->
 
   </article>
