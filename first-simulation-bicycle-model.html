@@ -110,9 +110,9 @@ simply look at the parent environment.  It can look something like this:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">def</span> <span class="nv">fun</span><span class="ss">(</span><span class="nv">t</span>,<span class="nv">x</span><span class="ss">)</span>
     <span class="nv">dx</span> <span class="o">=</span> <span class="nv">equationsOfMotion</span>
 
-    <span class="k">if</span> <span class="nv">IS_INTEGRATED</span> <span class="nv">is</span> <span class="nv">True</span>
+    <span class="k">if</span> <span class="nv">IS_INTEGRATED</span> <span class="nv">is</span> <span class="nv">True</span>:
         <span class="k">return</span> <span class="nv">dx</span>
-    <span class="k">else</span>
+    <span class="k">else</span>:
         <span class="nv">extraOutputs</span> <span class="o">=</span> <span class="nv">otherEquations</span>
         <span class="k">return</span> <span class="nv">extraOutputs</span>
 
