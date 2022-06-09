@@ -22,22 +22,22 @@
 
 
 <meta name="author" content="Jonathan Loyola" />
-<meta name="description" content="An attempt to build a good workflow for simulating in Python. The bicycle model is a ubiquitous representation of a passenger vehicle loaded with utility for such a small and simple model. This particular schematic includes rear-wheel steering. The model can be represented with a bond graph as shown below …" />
+<meta name="description" content="Quick Trailer Simulation A towed trailer can have the potential to be unstable under certain loading conditions. A stability criteria can be derived from the simple model shown below Sometimes called a 2-dof trailer model, this particular model allows the vehicle to be represented with two coordinates. With bond graphs …" />
 <meta name="keywords" content="">
 
 <meta property="og:site_name" content="Jonathan Loyola"/>
-<meta property="og:title" content="First Simulation: Bicycle Model"/>
-<meta property="og:description" content="An attempt to build a good workflow for simulating in Python. The bicycle model is a ubiquitous representation of a passenger vehicle loaded with utility for such a small and simple model. This particular schematic includes rear-wheel steering. The model can be represented with a bond graph as shown below …"/>
+<meta property="og:title" content="Third Simulation: Trailer"/>
+<meta property="og:description" content="Quick Trailer Simulation A towed trailer can have the potential to be unstable under certain loading conditions. A stability criteria can be derived from the simple model shown below Sometimes called a 2-dof trailer model, this particular model allows the vehicle to be represented with two coordinates. With bond graphs …"/>
 <meta property="og:locale" content="en_US"/>
-<meta property="og:url" content="./first-simulation-bicycle-model.html"/>
+<meta property="og:url" content="./third-simulation-trailer.html"/>
 <meta property="og:type" content="article"/>
-<meta property="article:published_time" content="2022-05-27 12:00:00-07:00"/>
+<meta property="article:published_time" content="2022-06-09 12:00:00-07:00"/>
 <meta property="article:modified_time" content=""/>
 <meta property="article:author" content="./author/jonathan-loyola.html">
 <meta property="article:section" content="Article"/>
 <meta property="og:image" content="/images/me.jpg">
 
-  <title>Jonathan Loyola &ndash; First Simulation: Bicycle Model</title>
+  <title>Jonathan Loyola &ndash; Third Simulation: Trailer</title>
 
 </head>
 <body>
@@ -72,9 +72,9 @@
 <article class="single">
   <header>
       
-    <h1 id="first-simulation-bicycle-model">First Simulation: Bicycle Model</h1>
+    <h1 id="third-simulation-trailer">Third Simulation: Trailer</h1>
     <p>
-          Posted on Fri 27 May 2022 in <a href="./category/article.html">Article</a>
+          Posted on Thu 09 June 2022 in <a href="./category/article.html">Article</a>
 
 
     </p>
@@ -82,54 +82,35 @@
 
 
   <div>
-    <h3>An attempt to build a good workflow for simulating in Python.</h3>
-<p>The bicycle model is a ubiquitous representation of a passenger vehicle 
-loaded with utility for such a small and simple model.  This particular
-schematic includes rear-wheel steering.</p>
-<p><img alt="Photo" src="./bicycle car images/schematic.png"></p>
+    <h3>Quick Trailer Simulation</h3>
+<p>A towed trailer can have the potential to be unstable under certain loading
+conditions.  A stability criteria can be derived from the simple model shown
+below</p>
+<p><img alt="Photo" src="./trailer images/schematic.png"></p>
+<p>Sometimes called a 2-dof trailer model, this particular model allows the
+vehicle  to be represented with two coordinates.  With bond graphs, we generate 
+four equations of motion for simulation: three energy storing states and one state that
+is necessary for describing the angle of the trailer. </p>
 <p>The model can be represented with a bond graph as shown below.</p>
-<p><img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
-<h1>Solving ODEs in Python</h1>
-<p>Integrating a set of ordinary differential equations can be straight forward
-once the equations of motion are available.  However, many solvers simply
-output the states of the system.  More often than not, we may be interested in
-intermediate equations such as forces, or additional equations such as
-displacements and accelerations.  This often requires a two step solution.</p>
-<ol>
-<li>Integrate the EOM and generate the solution, i.e. the states</li>
-<li>Feed the solved states and time samples back to the EOM and save the
-additional outputs we are interested in.</li>
-</ol>
-<p>For ODEs, the function used is scipy.integrate.solve_ivp which uses a 
-Runge-Kutta method with variable time step.</p>
-<p>One simple method is to define a variable which will change what return statement
-is used.  The choice could be either the differential outputs needed for 
-solve_ivp or the additional outputs we desire when marching through the
-solutions.  The variable will be non-local to the procedure, so Python will
-simply look at the parent environment.  It can look something like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">def</span> <span class="nv">fun</span><span class="ss">(</span><span class="nv">t</span>,<span class="nv">x</span><span class="ss">)</span>
-    <span class="nv">dx</span> <span class="o">=</span> <span class="nv">equationsOfMotion</span>
-
-    <span class="k">if</span> <span class="nv">IS_INTEGRATED</span> <span class="nv">is</span> <span class="nv">True</span>:
-        <span class="k">return</span> <span class="nv">dx</span>
-    <span class="k">else</span>:
-        <span class="nv">extraOutputs</span> <span class="o">=</span> <span class="nv">otherEquations</span>
-        <span class="k">return</span> <span class="nv">extraOutputs</span>
-
-<span class="nv">IS_INTEGRATED</span> <span class="o">=</span> <span class="nv">True</span>
-<span class="nv">sol</span> <span class="o">=</span> <span class="nv">integrate</span>.<span class="nv">solve_ivp</span><span class="ss">(</span><span class="nv">fun</span>,<span class="nv">tspan</span>,<span class="nv">x0</span><span class="ss">)</span>
-</code></pre></div>
-
-<p>Then a for loop can step through time and the states to output the additional
-outputs we care about.</p>
-<h1>Bicycle model results</h1>
-<p><img alt="Photo" src="./bicycle car images/signals.png"></p>
-<p>The results to a step steer are shown.  The lateral acceleration plot shows an
-interesting kink it the response.  The lateral acceleration is
-<span class="math">\(a_y=\dot{v}+u_0\omega_z\)</span>, where <span class="math">\(\dot{v}\)</span> is a direct function of the input.
-Therefore, the step steer shape shows up in the response.  In reality a step
-input is not realizable, it would be filtered either from a human or steering
-robot.</p>
+<p><img alt="Photo" src="./trailer images/BondGraph.png"></p>
+<p>The stability criteria (not derived here) is <span class="math">\(mab &gt; J_y\)</span>.  We should be able to 
+show this in the simulation</p>
+<h1>Stable Vehicle Results</h1>
+<p>For the first simulation <span class="math">\(mab = 1875\)</span> and <span class="math">\(J_y = 937\)</span> at a forward speed of 
+30 mph.  The plots below show that  with an initial trailer angle of 1 degree, 
+the trailer damps down.  The spring stiffness was chosen such that the displacement 
+is not too huge. </p>
+<p><img alt="Photo" src="./trailer images/stable.png"></p>
+<h1>Unstable Vehicle Results</h1>
+<p>For the second simulation the moment of inertia is increased to <span class="math">\(J_y = 2343\)</span>.
+What is apparent is that the trailer angle grows.</p>
+<p><img alt="Photo" src="./trailer images/unstable.png"></p>
+<p>This does not mean that this is exactly what would happen in a real vehicle 
+because of the assumptions made in the model.  Small angle approximations, 
+linear tires, etc.</p>
+<p>However, it is good indicator as to why one should follow the directions when loading a trailer. 
+Load the trailer such that it is "tongue heavy" and try not to transport items 
+sticking out the back as this increases the moment of inertia.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
