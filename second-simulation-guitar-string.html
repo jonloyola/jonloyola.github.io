@@ -226,12 +226,33 @@ are set up to be at least 10x as small as the smallest period.   I've reached
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesCombined.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
 <p><a href="./distributed audio/ThirtyModesSingle.wav">Near Bridge</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesSingle.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<h1>Simulation 5</h1>
+<h2>30 Mode Shapes witih Damping</h2>
+<p>Damping is added to the modes after the separation of variables.  This is simple
+to do with bond graphs and adds a damping term <span class="math">\(R_n\)</span> to the momentum equation 
+as follows:</p>
+<h4><span class="math">\(\dot{p}_n = -k_n q_n - R_n \frac{p_n}{m_n}\)</span> + F_1(t)Y_n(x1) + F_2(t)Y_n(x2)$</h4>
+<p>The damping ratio was chosen to be extremely small in order to not damp out the 
+system immediately, at <span class="math">\(\zeta = 0.001\)</span></p>
+<p>This results in the following accelerations from the point of the listener:</p>
+<p><img alt="Photo" src="./distributed images/Damp.png"></p>
+<p><a href="./distributed audio/ThirtyModesCombinedDamped.wav">Combined</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesCombinedDamped.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p><a href="./distributed audio/ThirtyModesSingleDamped.wav">Near Bridge</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesSingleDamped.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p>A very important concept that comes out of damping distributed systems is the 
+faster dissipation of the higher modes.  Since the higher modes have
+much higher frequencies and thus much higher velocities, the damping forces are
+relatively greater.  This can be seen when looking at the mode displacements in 
+the following figures.</p>
+<p><img alt="Photo" src="./distributed images/DampMode1.png">
+<img alt="Photo" src="./distributed images/DampMode15.png">
+<img alt="Photo" src="./distributed images/DampMode30.png"></p>
 <h1>Future Work</h1>
 <p>This was an interesting project that gave lots of insight and challenges.
-A way to extend the work would be to add damping to the modes and potentially
-simulate using a fixed-free boundary condition.  At the free end attach a stiff
-spring which would represent the bridge vibrating.  I have added damping to my
-github project.</p>
+A way to extend the work would be to simulate using a fixed-free boundary 
+condition.  At the free end attach a stiff spring which would represent the 
+bridge vibrating.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
