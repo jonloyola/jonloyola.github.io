@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="./theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="./theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="./theme/font-awesome/css/font-awesome.min.css">
+
+
+
+
+
+
+
+<meta name="author" content="Jonathan Loyola" />
+<meta name="description" content="Using a symbolic library to help with workflow. A very useful tool for analytical analysis, coming up with the state space of a linear system easier, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model …" />
+<meta name="keywords" content="">
+
+<meta property="og:site_name" content="Jonathan Loyola"/>
+<meta property="og:title" content="SymPy"/>
+<meta property="og:description" content="Using a symbolic library to help with workflow. A very useful tool for analytical analysis, coming up with the state space of a linear system easier, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model …"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="./sympy.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2022-06-20 12:00:00-07:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="./author/jonathan-loyola.html">
+<meta property="article:section" content="Article"/>
+<meta property="og:image" content="/images/me.jpg">
+
+  <title>Jonathan Loyola &ndash; SymPy</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href=".">
+        <img src="/images/me.jpg" alt="Jonathan Loyola" title="Jonathan Loyola">
+      </a>
+      <h1><a href=".">Jonathan Loyola</a></h1>
+
+
+      <nav>
+        <ul class="list">
+          <li><a href="./pages/about-me.html#about-me">About Me</a></li>
+          <li><a href="./pages/publications.html#publications">Publications</a></li>
+
+          <li><a href="https://hce.ucdavis.edu" target="_blank">Hyundai Center</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/jonathan-loyola-45411529/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/jonloyola" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="sympy">SymPy</h1>
+    <p>
+          Posted on Mon 20 June 2022 in <a href="./category/article.html">Article</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <h3>Using a symbolic library to help with workflow.</h3>
+<p>A very useful tool for analytical analysis, coming up with the state space of 
+a linear system easier, and probably more that I will need to explore are 
+symbolic libraries/packages.  </p>
+<p><img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
+<p>To begin, lets revisit the bond graph of the bicycle model.  We can come up with 
+the equations of motion procedurally in order to have a set of first order ODEs 
+such that all of the derivatives are only dependent on the states, inputs, and 
+time, i.e.</p>
+<p><span class="math">\(\dot{x} = f(x,u,t)\)</span></p>
+<p>However, sometimes its easier to write equations in terms of intermediate variables
+such as forces or velocities that show up often.  To get a final state space 
+matrix, eventually one would need to susbsitute and create the matrix by hand. 
+Symbolic libraries can help simplify this process considerably.  (Special bond 
+graph programs can auto generate the equations like CAMP_G and 20-Sim).</p>
+<p>To start, we can write the equations of motion from the bond graph in terms of 
+the forces <span class="math">\(F_{yf}\)</span> and <span class="math">\(F_{yr}\)</span> as follows:</p>
+<div class="math">$$
+\dot{v}_y = \frac{1}{m} \left( -m\omega_z v_{x0} + F_{yf} + F_{yr} \right)\\
+\dot{\omega}_{z} = \frac{1}{J_z} \left( aF_{yf} -bF_{yr} \right)
+$$</div>
+<p>Now we need the forces, which are dependent on the slip angles.  These are as
+follows:</p>
+<div class="math">$$
+F_{yf} = C_f\left( \delta_f - \frac{v_y + a\omega_z}{v_{x0}}\right)\\
+F_{yr} = C_r\left( \delta_r - \frac{v_y - b\omega_z}{v_{x0}}\right)
+$$</div>
+<p>Now one would need to substitute the forces, gather the terms for the states 
+and inputs, and formulate the state space matrices.  For this two state system 
+it is not very difficult.  However, one can imagine a much larger system may 
+require much more work and more possibilites of human error.</p>
+<h3>Creating Symbols</h3>
+<p>Symbol creation is something that I need to continue to explore.  At some point 
+I would like to generate an arbitrary number of symbols to evaluate the string 
+example.  For now we'll stick to an explicit tuple assignment where each variable 
+is typed out on the left side.</p>
+<p>Whats nice about the symbols library in python is that the symbol created can have a different
+variable name assigned to it.  This allows for Latex expressions and use of 
+characters may not be used directly in Python, wich I'll show in an example.</p>
+<p>The argument of the symbols function is a string of symbols separated by spaces 
+or commas.  For the bicycle model I use the following:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span>
+<span class="n">parList</span> <span class="o">=</span> <span class="s1">&#39;a,b,C_f,C_r,m,J_z,v_</span><span class="si">{x0}</span><span class="s1">&#39;</span>
+<span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">Cf</span><span class="p">,</span><span class="n">Cr</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">Jz</span><span class="p">,</span><span class="n">u0</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">parList</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Above I use brackets and underscores which translate to Latex commands.</p>
+<h3>Generating the State Space Matrices</h3>
+<p>The method of generating the state space is to create a column/row matrix of 
+the state space equations, and take the jacobian (the jacobian is an attribute 
+of the matrix, so dot notation is needed).</p>
+<p>Therefore, once the equations of motion are created symbolically, we stick them 
+in a matrix and take their jacobians with respect to the states and the inputs 
+to generate the A and B matrices.  The states and inputs need to be put in their 
+own matrices.  It will be something like the following:</p>
+<div class="highlight"><pre><span></span><code>x = Matrix([v, wz])
+dx = Matrix([dv, dwz])
+u = Matrix([delf, delr])
+y = Matrix([wz, ay])
+
+A = dx.jacobian(x)
+B = dx.jacobian(u)
+C = y.jacobian(x)
+D = y.jacobian(u)
+</code></pre></div>
+
+<p>Now the matrices can be displayed symbolically.</p>
+<div class="math">$$
+A = \left[\begin{matrix}- \frac{Cf + Cr}{m u_{0}} &amp; \frac{- Cf a + Cr b - 
+m u_{0}^{2}}{m u_{0}}\\\frac{- Cf a + Cr b}{Jz u_{0}} &amp; - \frac{Cf a^{2} + 
+Cr b^{2}}{Jz u_{0}}\end{matrix}\right]\\
+B = \left[\begin{matrix}\frac{C_{f}}{m} &amp; \frac{C_{r}}{m}\\\frac{C_{f} a}{J_{z}} &amp; 
+- \frac{C_{r} b}{J_{z}}\end{matrix}\right]\\
+C = \left[\begin{matrix}0 &amp; 1\\- \frac{C_{f} + C_{r}}{m v_{x0}} &amp; \frac{- C_{f} a + 
+C_{r} b}{m v_{x0}}\end{matrix}\right]\\
+D = \left[\begin{matrix}0 &amp; 0\\\frac{C_{f}}{m} &amp; \frac{C_{r}}{m}
+\end{matrix}\right]
+$$</div>
+<h3>Conversion to NumPy to get eigenvalues</h3>
+<p>Fortunately, there is a tool for converting from SymPy to other numerical 
+libraries in order to use different functions.  Lambidfy was created primarily 
+as a bridge between Sympy to other libraries.  Just like it sounds, its like a 
+lambda function where once evaluated generates a numerical output for use in 
+the other libraries.</p>
+<p>To create the function type I do the following:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Alam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lambdify</span><span class="p">(</span><span class="o">[</span><span class="n">parSym</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+<p>Now I can evaluate the function with a list of numerical constants (parValues) 
+and evaulate the eigenvalues as follows:</p>
+<div class="highlight"><pre><span></span><code>Alam(parValues)
+w, v = eig(Alam(parValues))
+</code></pre></div>
+
+<h3>Derivative Causality</h3>
+<p>To be continued....</p>
+<h1>Solving ODEs in Python</h1>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  2022</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Jonathan Loyola ",
+  "url" : ".",
+  "image": "/images/me.jpg",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
