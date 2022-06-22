@@ -22,12 +22,12 @@
 
 
 <meta name="author" content="Jonathan Loyola" />
-<meta name="description" content="Using a symbolic library to help with workflow. A very useful tool for analytical analysis, coming up with the state space of a linear system easier, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model …" />
+<meta name="description" content="Using a symbolic library to help with my workflow. A very useful tool for analytical analysis, generating the state space of a linear system, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model. The equations …" />
 <meta name="keywords" content="">
 
 <meta property="og:site_name" content="Jonathan Loyola"/>
 <meta property="og:title" content="SymPy"/>
-<meta property="og:description" content="Using a symbolic library to help with workflow. A very useful tool for analytical analysis, coming up with the state space of a linear system easier, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model …"/>
+<meta property="og:description" content="Using a symbolic library to help with my workflow. A very useful tool for analytical analysis, generating the state space of a linear system, and probably more that I will need to explore are symbolic libraries/packages. To begin, lets revisit the bond graph of the bicycle model. The equations …"/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:url" content="./sympy.html"/>
 <meta property="og:type" content="article"/>
@@ -82,13 +82,13 @@
 
 
   <div>
-    <h3>Using a symbolic library to help with workflow.</h3>
-<p>A very useful tool for analytical analysis, coming up with the state space of 
-a linear system easier, and probably more that I will need to explore are 
+    <h3>Using a symbolic library to help with my workflow.</h3>
+<p>A very useful tool for analytical analysis, generating the state space of 
+a linear system, and probably more that I will need to explore are 
 symbolic libraries/packages.  </p>
 <p><img alt="Photo" src="./bicycle car images/BondGraph.png"></p>
-<p>To begin, lets revisit the bond graph of the bicycle model.  We can come up with 
-the equations of motion procedurally in order to have a set of first order ODEs 
+<p>To begin, lets revisit the bond graph of the bicycle model.  The equations of 
+motion can be derived procedurally in order to have a set of first order ODEs 
 such that all of the derivatives are only dependent on the states, inputs, and 
 time, i.e.</p>
 <p><span class="math">\(\dot{x} = f(x,u,t)\)</span></p>
@@ -106,8 +106,10 @@ $$</div>
 <p>Now we need the forces, which are dependent on the slip angles.  These are as
 follows:</p>
 <div class="math">$$
-F_{yf} = C_f\left( \delta_f - \frac{v_y + a\omega_z}{v_{x0}}\right)\\
-F_{yr} = C_r\left( \delta_r - \frac{v_y - b\omega_z}{v_{x0}}\right)
+F_{yf} = C_f \alpha_f\\
+F_{yr} = C_r \alpha_r\\
+\alpha_f = \left( \delta_f - \frac{v_y + a\omega_z}{v_{x0}}\right)\\
+\alpha_r = \left( \delta_r - \frac{v_y - b\omega_z}{v_{x0}}\right)
 $$</div>
 <p>Now one would need to substitute the forces, gather the terms for the states 
 and inputs, and formulate the state space matrices.  For this two state system 
@@ -118,9 +120,10 @@ require much more work and more possibilites of human error.</p>
 I would like to generate an arbitrary number of symbols to evaluate the string 
 example.  For now we'll stick to an explicit tuple assignment where each variable 
 is typed out on the left side.</p>
-<p>Whats nice about the symbols library in python is that the symbol created can have a different
-variable name assigned to it.  This allows for Latex expressions and use of 
-characters may not be used directly in Python, wich I'll show in an example.</p>
+<p>Whats nice about the symbols library in python is that the symbol created can 
+have a different variable name assigned to it.  This allows for Latex 
+expressions and use of characters may not be used directly in Python, wich 
+I'll show in an example.</p>
 <p>The argument of the symbols function is a string of symbols separated by spaces 
 or commas.  For the bicycle model I use the following:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span>
@@ -177,8 +180,50 @@ w, v = eig(Alam(parValues))
 </code></pre></div>
 
 <h3>Derivative Causality</h3>
-<p>To be continued....</p>
-<h1>Solving ODEs in Python</h1>
+<p>Sometimes in the modeling decisions made, derviative causality needs to be 
+dealt with.  This generates implicit equations that must be dealt with.</p>
+<p><span class="math">\(\dot{x} = f(x,u,t,\dot{x})\)</span></p>
+<p>The equations can be dealt numerically in the solver by using an implicit 
+solver.  Another approach if the equations are not too complicated is to use 
+a symbolic solver.  We'll try this with the trailer simulation where we assume 
+a kinematic contraint on the tire.</p>
+<p><img alt="Photo" src="./trailer images/BondGraphDer.png"></p>
+<p>The bond graph shown above has a source flow to constrain the lateral velocity 
+of the tire instead of generating a slip.  This requires one of the momentum 
+states to be switched to derivative causality.  </p>
+<p>Generating the equations are now a bit more complicated.  Following the 
+procedure for derivative caualitly, we can generate the following equations:</p>
+<div class="math">$$
+\begin{align}
+\dot{p}_v &amp;= mb\dot{\omega}_y\\
+\dot{\omega}_y &amp;= 1/J_y( -akq - b(mU\omega_y + qk + \dot{p}_v))\\
+\dot{q} &amp;= U\theta + b\omega_y + a\omega_y\\
+\dot{\theta} &amp;= \omega_y
+\end{align}
+$$</div>
+<p>Now we can substitute <span class="math">\(\dot{p}_v\)</span> and solve for \dot{\omega}_y.  Using the 
+symbolic library to solve the  it would look like the following:</p>
+<div class="highlight"><pre><span></span><code>dwy_der = symbols(&#39;\dot{w}_y&#39;)
+dpv = b*dwy_der*m
+f = 1/Jy*( -a*k*q - b*(m*wy*U + q*k + dpv)) - dwy_der
+dwy = solveset(f,dwy_der).args[0]
+</code></pre></div>
+
+<p>With the equations expressed in explicit form, we can now generate the A 
+matrix of the state space.  Furthermore, we can generate the characteristic 
+equation using charpoly:</p>
+<div class="highlight"><pre><span></span><code>s = symbols(&#39;s&#39;)
+p = A.charpoly(s)
+</code></pre></div>
+
+<p>where p generates</p>
+<div class="math">$$
+s^{3} + \frac{U b m}{J_{y} + b^{2} m} s^{2} + 
+\frac{a^{2} k + 2 a b k + b^{2} k}{J_{y} + b^{2} m} s + 
+\frac{U a k + U b k}{J_{y} + b^{2} m}
+$$</div>
+<p>From here we can use characteristic polynomial to derive the trailer stability 
+criteria using the Routh-Hurwitz stabililty criterion.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
