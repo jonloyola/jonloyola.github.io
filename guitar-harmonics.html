@@ -88,35 +88,41 @@
 String'.  The idea here is to understand what happens when 'harmonics' are 
 played on a guitar.  This is done by lightly holding a finger on a string at 
 exact locations, plucking the string, and removing the finger.  The result is 
-a higher pitched sound instead of just plucking and open string.</p>
+a higher pitched sound instead of just plucking the open string.</p>
 <p>We can gather what is happening from the mode shapes.  The location of where 
-to the finger to generate harmonics is very precise: over the 12th fret (half 
+to place the finger to generate harmonics is very precise: over the 12th fret (half 
 the length of the string), over the 7th fret (a third of the length), and over 
-the fifth fret (a fourth of the length).  If these locations are damping the 
-strings, then the fundamental frequency and the lower overtones are muted.</p>
-<p>Any harmonics removes the fundamental mode (mode 1).  When harmonics is used 
-halfway on the string, the second mode is allowed to sound since we're at the 
-mode's node with zero velocity.  However, the third node is muted, while the 
-fourth is allowed to sound.</p>
-<p>When harmoincs is applied one third of the way on the string, the third mode 
-is allowed to sound while mode 2 and mode 1 have velocites there that damp out
-their sound.</p>
-<p>We wish to simulate this event phenomenon.</p>
+the fifth fret (a fourth of the length).  If these locations are damping any 
+relative motion on the string, then we expect the fundamental frequency and 
+lower overtones to be muted.</p>
+<p>Any harmonics removes the fundamental frequency (mode 1) since the whole length 
+of the string experiences motion for the first mode (except the boundaries).<br>
+When harmonics is applied halfway up the string, the second mode is allowed to 
+sound since we're at a node with zero velocity.  However, folling the mode shapes 
+in the figure above, the third node is expected to be muted, while the 
+fourth is allowed to sound.  Any mode that has a node halfway on the string 
+would continue to sound, which are modes that are multiples of two.</p>
+<p>When harmoincs is applied at one third of the wayup the string, the third mode 
+is allowed to sound while mode 2 and mode 1 have velocites that damp out.<br>
+Any mode having a node here will sound.  It turns out modes with 
+multiples of three continue to sound.  This trend continues as you go up in 
+harmonics.</p>
+<p>We wish to simulate this phenomenon.</p>
 <h3>Modeling</h3>
 <p>The same model that was developed for the previous string plucking simulation 
 can be used.  However, the bond graph is adjusted to include not only damping 
-for each mode shape, but also damping at a location <span class="math">\(x_2\)</span>.</p>
+for each mode shape, but damping at a particular location <span class="math">\(x_2\)</span> on the string.</p>
 <p><img alt="Photo" src="./distributed images/BondGraph2.png"></p>
 <p>The bond graph above shows the resistance <span class="math">\(R\)</span> which will represent a finger 
 touching the string at a location <span class="math">\(x_2\)</span>. The resistance is shown as linear 
-(the colon and the resistance coefficient b), but will be applied only for a 
-small amount of time.  This makes the system nonlinear.</p>
-<p>If one follows the causality once following the procedure, we find that the 
-damping force is applied to each mode momentum transoformed through their 
-appropriate mode shape.  The velocity that passes through the damping is 
-dependent on a combination of each the mode shape velocities.  </p>
+(the colon and the resistance coefficient b) but will be applied only for a 
+small amount of time.  This of course makes the system nonlinear.</p>
+<p>If one follows the causality on the bond graph, we find that the 
+damping force is applied to each mode momentum transformed through their 
+appropriate mode shape.  The velocity that passes through the damping resistance 
+is dependent on a combination of each the mode shape velocities.  </p>
 <h3>Equations</h3>
-<p>The equations are not too different.  As mentioned in the previous section, 
+<p>The equations are not too different from before.  As mentioned in a previous paragraph, 
 the combination of flows from each mode shape needs to be determined.  The 
 equations turn out to be as follows:</p>
 <h4><span class="math">\(\dot{p}_n = -k_n q_n -b_n \frac{p_n}{m_n} +  F_1(t)Y_n(x1) + F_d Y_n(x2)\)</span></h4>
@@ -125,7 +131,9 @@ equations turn out to be as follows:</p>
 <h3><span class="math">\(F_d = -b(\sum_{n=1}^{N} Y_n(x2) \frac{p_n}{m_n})\)</span></h3>
 <h3>Simulation Optimization</h3>
 <p>A problem I came across while simulating was post processing loads of data.<br>
-I used the accelerations of the derivatives, and combined them </p>
+As explained in the previous article for simulating a string, I combined the accelerations of 
+multiple points on the string in a manner such that they have a time delay as 
+they travel to the listener.  My initial code was as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ddwArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xpoint</span><span class="p">,</span><span class="k">pad</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">zip</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span><span class="n">npadding</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 <span class="w">    </span><span class="n">ddw_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
@@ -136,9 +144,17 @@ I used the accelerations of the derivatives, and combined them </p>
 <span class="w">    </span><span class="err">################################################</span><span class="w"></span>
 <span class="w">    </span><span class="n">ddw_sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">0</span><span class="o">]*</span><span class="k">pad</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ddw_point</span><span class="o">[</span><span class="n">pad:</span><span class="o">]</span><span class="w"></span>
 <span class="w">    </span><span class="n">ddwArray</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">ddw_sound</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
 
-
-<span class="n">dxprime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="k">array</span><span class="p">(</span><span class="n">list</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dx</span><span class="p">)))</span><span class="w"></span>
+<p>The problem was a for loop that iterated through each time step of 
+data.  It turns out I did not need to step through each data point.  I needed 
+to operate on each element of the data with either addition, multiplication, 
+or division.  Using NumPy arrays, this is possible to do directly on the array 
+in some omptimized manner working under the hood which results in much faster 
+processing.  Therefore, converting my arrays of data from lists to NumPy arrays 
+and operating on those arrays with my math operations cut down on a significant 
+amount of time.</p>
+<div class="highlight"><pre><span></span><code><span class="n">dxprime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="k">array</span><span class="p">(</span><span class="n">list</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dx</span><span class="p">)))</span><span class="w"></span>
 <span class="n">ddwArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xpoint</span><span class="p">,</span><span class="k">pad</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">zip</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span><span class="n">npadding</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 <span class="w">    </span><span class="n">ddw_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
@@ -155,23 +171,67 @@ I used the accelerations of the derivatives, and combined them </p>
 <h3>Simulation 1: Harmonics at the 12th fret</h3>
 <p>The simulations will use the same parameters as mentioned in a previous 
 article.  The damping ratio for all the modes is <span class="math">\(\zeta=0.0005\)</span>.  The damping 
-from the finger, however, is <span class="math">\(\zeta_{Harmonic} = 0.02\)</span>.  The damping 
+from the finger, however, is <span class="math">\(\zeta_{Harmonic} = 0.02\)</span>, chosen somewhat arbitrarily.  The damping 
 coefficient is calculated based on the modal mass and modal natural frequency 
 of the first mode.</p>
-<p>As a reminder, the dampned string without harmonics sounds like the sound file
-below.</p>
-<p><a href="./distributed audio/ThirtyModesCombinedDamped.wav">Combined</a></p>
+<p>As a base sound, the dampened string without harmonics is below.</p>
+<p><a href="./distributed audio/ThirtyModesCombinedDamped.wav">No Harmonics</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesCombinedDamped.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
-<p><a href="./distributed audio/ThirtyModesHarmonicHalf.wav">Harmoinic Half</a></p>
+<p>As mentined before, the simulation is nonlinear since the damping representing 
+the finger will only be on for a short duration.  The amount of time was chosen 
+arbitrarily.  For the simulations it is a time of <span class="math">\(t=0.01\)</span> seconds unless 
+otherwise stated.  The results are below.</p>
+<p><a href="./distributed audio/ThirtyModesHarmonicHalf.wav">Harmonics at half length</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicHalf.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p>Monitoring the modal displacements, we can see that our explanation of harmonics 
+held true.  Since the damping was at the halfway point of the string, we 
+expect the modes that are multiples of two to not be damped out.  Modes 2 and
+4 were allowed to ring through while modes 1 and 3 both damped out right away.</p>
+<p><img alt="Photo" src="./distributed images/HarmHalf1.png">
+<img alt="Photo" src="./distributed images/HarmHalf2.png"></p>
 <h3>Simulation 2: Harmonics at the 7th fret</h3>
-<p><a href="./distributed audio/ThirtyModesHarmonicThird.wav">Harmoinic Third</a></p>
+<p>Here, the damping is applied at one third of the length of the string.  We can 
+hear the pitch go up.</p>
+<p><a href="./distributed audio/ThirtyModesHarmonicThird.wav">Harmonics at a third of the length</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicThird.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
 <h3>Simulation 3: Harmonics at the 5th fret</h3>
-<p><a href="./distributed audio/ThirtyModesHarmonicFourth1.wav">Harmoinic Fourth 1</a></p>
+<p>Finally, damping applied at one fourth of the length of the string.</p>
+<p><a href="./distributed audio/ThirtyModesHarmonicFourth1.wav">Harmonics at a fourth of the length 1</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicFourth1.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
-<p><a href="./distributed audio/ThirtyModesHarmonicFourth2.wav">Harmoinic Fourth 2</a></p>
+<p>Here, we run into some difficulties that were unexpected.  The harmonic sound 
+seems to contain some of the lower modes.  The figures of the mode shapes below 
+confirm the suspicion.</p>
+<p><img alt="Photo" src="./distributed images/HarmHalf411.png">
+<img alt="Photo" src="./distributed images/HarmHalf421.png"></p>
+<p>There is a noticably thick band of oscillation in the first and third mode.<br>
+This happends because either we did not have enough damping applied for the 
+finger, or the damping was not left on long enough.  Since the lower modes take 
+longer to damp out on their own, we notice some of the difficulies why these 
+higher hamonics are hard to play.</p>
+<p>The damping applied to the first mode is at a location with less relative 
+velocity than the earlier harmonics, and therefore, less effective at muting 
+given the same amount of damping force and time to damp.  If the lower modes are 
+left oscillating, the higher modes will die out on their own faster, eventually 
+leaving only the lower modes loud enough to hear.</p>
+<p>Another reason higher modes are more difficult to play is that the finger is 
+not a singular point applied on the string.  The tip of the finger is touching 
+some non negligable length of string.  Since the nodes get closer together in 
+distance as the harmonic goes up, you tend to dampen out the harmonic for the 
+mode of interest.  This is not a problem in this simulation, but should be 
+considered.</p>
+<p>Below the amount of time the damping of the finger is applied is doubled.  This 
+leads to mode 1 and mode 3 to damp out much more.</p>
+<p><a href="./distributed audio/ThirtyModesHarmonicFourth2.wav">Harmonics at a fourth of the length 2</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicFourth2.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p><img alt="Photo" src="./distributed images/HarmHalf412.png">
+<img alt="Photo" src="./distributed images/HarmHalf422.png"></p>
+<h3>Conclusion</h3>
+<p>I think we squeezed out a lot of interesting ideas from such a simple model. 
+Just to remind myself, this is what I started with:</p>
+<h4><span class="math">\(\frac{\partial^2 y}{\partial x^2} = \frac{1}{c^2} \frac{\partial^2 y}{\partial t^2}\)</span></h4>
+<p>There is definitely much more that could be done but for now, if I am going to 
+revisit distributed systems, I may move up to a 2DOF model (Timoshenko) or try 
+to explore a plate.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
