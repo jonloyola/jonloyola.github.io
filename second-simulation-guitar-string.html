@@ -184,7 +184,7 @@ at position (x=0,y=0), then the listener is at position (0,1).  As you travel al
 to the end at position (0,L), one can solve for how long it takes for sound to travel at 
 varying points.</p>
 <p>Here is the result for when multiple sources on the string are combined vs just
-taking a single point.  I chose 5 evenly spaced points between 0 and L to combine.
+taking a single point.  I chose 20 evenly spaced points between 0 and L to combine.
 The impulse happens at <span class="math">\(t=0\)</span>, but the delay is from the
 speed of sound taking time to reach the listener.  For a pure tone, its nearly identicle.</p>
 <p><img alt="Photo" src="./distributed images/Sim1.png"></p>
@@ -208,8 +208,7 @@ pickup.  The sound is twangy.  But still has a robotic type of sound.</p>
 <h2>10 Mode Shapes</h2>
 <p>With even more mode shapes, the sound is getting closer.  But still robotic.  More
 overtones does have an effect on the sound.  This time i've reached a frequency of 
-3296 Hz for the highest mode. I used 40 locations on the string to combine.  The results are shown
-below.</p>
+3296 Hz for the highest mode.  The results are shown below.</p>
 <p><img alt="Photo" src="./distributed images/Sim3.png"></p>
 <p><a href="./distributed audio/TenModesCombined.wav">Combined</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/TenModesCombined.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
@@ -233,7 +232,7 @@ to do with bond graphs and adds a damping term <span class="math">\(R_n\)</span>
 as follows:</p>
 <h4><span class="math">\(\dot{p}_n = -k_n q_n - R_n \frac{p_n}{m_n} + F_1(t)Y_n(x1) + F_2(t)Y_n(x2)\)</span></h4>
 <p>The damping ratio was chosen to be extremely small in order to not damp out the 
-system immediately, at <span class="math">\(\zeta = 0.001\)</span></p>
+system immediately, at <span class="math">\(\zeta = 0.0005\)</span></p>
 <p>This results in the following accelerations from the point of the listener:</p>
 <p><img alt="Photo" src="./distributed images/Damp.png"></p>
 <p><a href="./distributed audio/ThirtyModesCombinedDamped.wav">Combined</a></p>

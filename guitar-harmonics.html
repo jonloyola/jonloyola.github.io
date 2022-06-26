@@ -123,6 +123,35 @@ equations turn out to be as follows:</p>
 <h4><span class="math">\(\dot{q}_n = \frac{p_n}{m_n}\)</span></h4>
 <p>where</p>
 <h3><span class="math">\(F_d = -b(\sum_{n=1}^{N} Y_n(x2) \frac{p_n}{m_n})\)</span></h3>
+<h3>Simulation Optimization</h3>
+<p>A problem I came across while simulating was post processing loads of data.<br>
+I used the accelerations of the derivatives, and combined them </p>
+<div class="highlight"><pre><span></span><code><span class="n">ddwArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xpoint</span><span class="p">,</span><span class="k">pad</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">zip</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span><span class="n">npadding</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddw_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+<span class="w">    </span><span class="err">####################</span><span class="w"> </span><span class="n">Slow</span><span class="w"> </span><span class="err">######################</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">sol</span><span class="p">.</span><span class="n">t</span><span class="p">))</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">dx[i</span><span class="o">][</span><span class="n">j</span><span class="o">]/</span><span class="n">m_modalArray</span><span class="o">[</span><span class="n">j</span><span class="o">]*</span><span class="n">Y</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">xpoint</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">modeNum</span><span class="p">)</span><span class="err">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">ddw_point</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="nf">sum</span><span class="p">(</span><span class="n">a</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="err">################################################</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddw_sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">0</span><span class="o">]*</span><span class="k">pad</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ddw_point</span><span class="o">[</span><span class="n">pad:</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddwArray</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">ddw_sound</span><span class="p">)</span><span class="w"></span>
+
+
+<span class="n">dxprime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="k">array</span><span class="p">(</span><span class="n">list</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dx</span><span class="p">)))</span><span class="w"></span>
+<span class="n">ddwArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xpoint</span><span class="p">,</span><span class="k">pad</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">zip</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span><span class="n">npadding</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddw_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+<span class="w">    </span><span class="err">####################</span><span class="w"> </span><span class="n">Optimize</span><span class="w"> </span><span class="err">##################</span><span class="w"></span>
+<span class="w">    </span><span class="n">a</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dxprime</span><span class="p">.</span><span class="n">shape</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">range</span><span class="p">(</span><span class="n">modeNum</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dxprime</span><span class="o">[</span><span class="n">:</span><span class="o">][</span><span class="n">j</span><span class="o">]/</span><span class="n">m_modalArray</span><span class="o">[</span><span class="n">j</span><span class="o">]*</span><span class="n">Y</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">xpoint</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">temp</span><span class="w"></span>
+<span class="w">    </span><span class="err">################################################</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddw_sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="p">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="k">pad</span><span class="p">),</span><span class="n">a</span><span class="o">[</span><span class="n">pad:</span><span class="o">]</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="n">ddwArray</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">ddw_sound</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
 <h3>Simulation 1: Harmonics at the 12th fret</h3>
 <p>The simulations will use the same parameters as mentioned in a previous 
 article.  The damping ratio for all the modes is <span class="math">\(\zeta=0.0005\)</span>.  The damping 
@@ -138,7 +167,7 @@ below.</p>
 <h3>Simulation 2: Harmonics at the 7th fret</h3>
 <p><a href="./distributed audio/ThirtyModesHarmonicThird.wav">Harmoinic Third</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicThird.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
-<h3>Simulation 1: Harmonics at the 5th fret</h3>
+<h3>Simulation 3: Harmonics at the 5th fret</h3>
 <p><a href="./distributed audio/ThirtyModesHarmonicFourth1.wav">Harmoinic Fourth 1</a></p>
 <p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicFourth1.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
 <p><a href="./distributed audio/ThirtyModesHarmonicFourth2.wav">Harmoinic Fourth 2</a></p>
