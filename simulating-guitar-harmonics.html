@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="./theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="./theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="./theme/font-awesome/css/font-awesome.min.css">
+
+
+
+
+
+
+
+<meta name="author" content="Jonathan Loyola" />
+<meta name="description" content="Simulating a String Being Plucked Distributed systems is a topic I never got to go into in depth with. A good introductory model that has been widely studied is the wave equation. To make this interesting for me, I wanted to try to simulate a guitar string being plucked. A …" />
+<meta name="keywords" content="">
+
+<meta property="og:site_name" content="Jonathan Loyola"/>
+<meta property="og:title" content="Simulating Guitar Harmonics"/>
+<meta property="og:description" content="Simulating a String Being Plucked Distributed systems is a topic I never got to go into in depth with. A good introductory model that has been widely studied is the wave equation. To make this interesting for me, I wanted to try to simulate a guitar string being plucked. A …"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="./simulating-guitar-harmonics.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2022-06-23 12:00:00-07:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="./author/jonathan-loyola.html">
+<meta property="article:section" content="Article"/>
+<meta property="og:image" content="/images/me.jpg">
+
+  <title>Jonathan Loyola &ndash; Simulating Guitar Harmonics</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href=".">
+        <img src="/images/me.jpg" alt="Jonathan Loyola" title="Jonathan Loyola">
+      </a>
+      <h1><a href=".">Jonathan Loyola</a></h1>
+
+
+      <nav>
+        <ul class="list">
+          <li><a href="./pages/about-me.html#about-me">About Me</a></li>
+          <li><a href="./pages/publications.html#publications">Publications</a></li>
+
+          <li><a href="https://hce.ucdavis.edu" target="_blank">Hyundai Center</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/jonathan-loyola-45411529/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/jonloyola" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="simulating-guitar-harmonics">Simulating Guitar Harmonics</h1>
+    <p>
+          Posted on Thu 23 June 2022 in <a href="./category/article.html">Article</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <h3>Simulating a String Being Plucked</h3>
+<p><img alt="Photo" src="./distributed images/ModeShapes.png"></p>
+<p>Distributed systems is a topic I never got to go into in depth with.
+A good introductory model that has been widely studied is the wave equation.  To 
+make this interesting for me, I wanted to try to simulate a guitar string 
+being plucked.  A uniform density string under tension such that gravity 
+can be neglected and has negligible stiffness can be analyzed and yields the 
+one-dimensional wave equation as follows:</p>
+<h4><span class="math">\(\frac{\partial^2 y}{\partial x^2} = \frac{1}{c^2} \frac{\partial^2 y}{\partial t^2}\)</span></h4>
+<p>where <span class="math">\(c^2 = T/\rho_L\)</span>.  The term <span class="math">\(c\)</span> is known as the speed of propogation.
+<span class="math">\(\rho_L\)</span> is called the linear density, and has units of <span class="math">\([kg/m]\)</span>.  It can also
+be represented as <span class="math">\(\rho_L = \rho*A\)</span>, where <span class="math">\(\rho\)</span> is the density and <span class="math">\(A\)</span> is the
+cross sectional area.</p>
+<p>Whats nice about this system (or the longitudinal motion of a bar) is that it 
+lends itself to a solution using separation of variables.  Two ODE's must be 
+satisfied: the spacial function and the function dependent on time only.  To 
+keep this brief, I'll just go over the equtions necessary for the simulation.</p>
+<h3>Equations</h3>
+<p>Due to orthogonality, each equation associated with a mode can be solved 
+separately and combined using the mode shapes.  To solve for the mode shapes,
+we need the bondary condtions.  For a guitar string, I will assume a fixed-fixed boundary
+condition.  This yields a natural frequency associated with each mode as follows:</p>
+<h4><span class="math">\(\omega_n = \frac{n\pi c}{L}\)</span> for <span class="math">\(n=1,2,3,...\)</span></h4>
+<p>The mode shapes can be derived as:</p>
+<h4><span class="math">\(Y_n = \sin(n\pi x/L)\)</span> for <span class="math">\(n=1,2,3,...\)</span></h4>
+<p>When the system is excited, one can look can think of the motion as a 
+combination of modes that are excited.  As you go up sequentially in moden 
+number, the number of nodes with zero movement increase, and the frequencies 
+associated with the modes increase as well.</p>
+<p>A bond graph of how a distributed system with finite modes is shown in the
+figure below.  For this particular bond graph, two arbitrary force inputs are
+shown.</p>
+<p><img alt="Photo" src="./distributed images/BondGraph2.png"></p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  2022</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Jonathan Loyola ",
+  "url" : ".",
+  "image": "/images/me.jpg",
+  "description": ""
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="./theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="./theme/pygments/github.min.css">
+  <link rel="stylesheet" type="text/css" href="./theme/font-awesome/css/font-awesome.min.css">
+
+
+
+
+
+
+
+<meta name="author" content="Jonathan Loyola" />
+<meta name="description" content="Simulating Playing Harmonics This is an extension of the previous work titled &#39;Second Simulation: Guitar String&#39;. The idea here is to understand what happens when &#39;harmonics&#39; are played on a guitar. This is done by lightly holding a finger on a string at exact locations, plucking the string, and removing …" />
+<meta name="keywords" content="">
+
+<meta property="og:site_name" content="Jonathan Loyola"/>
+<meta property="og:title" content="Guitar Harmonics"/>
+<meta property="og:description" content="Simulating Playing Harmonics This is an extension of the previous work titled &#39;Second Simulation: Guitar String&#39;. The idea here is to understand what happens when &#39;harmonics&#39; are played on a guitar. This is done by lightly holding a finger on a string at exact locations, plucking the string, and removing …"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="./guitar-harmonics.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2022-06-23 12:00:00-07:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="./author/jonathan-loyola.html">
+<meta property="article:section" content="Article"/>
+<meta property="og:image" content="/images/me.jpg">
+
+  <title>Jonathan Loyola &ndash; Guitar Harmonics</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href=".">
+        <img src="/images/me.jpg" alt="Jonathan Loyola" title="Jonathan Loyola">
+      </a>
+      <h1><a href=".">Jonathan Loyola</a></h1>
+
+
+      <nav>
+        <ul class="list">
+          <li><a href="./pages/about-me.html#about-me">About Me</a></li>
+          <li><a href="./pages/publications.html#publications">Publications</a></li>
+
+          <li><a href="https://hce.ucdavis.edu" target="_blank">Hyundai Center</a></li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/jonathan-loyola-45411529/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/jonloyola" target="_blank"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="guitar-harmonics">Guitar Harmonics</h1>
+    <p>
+          Posted on Thu 23 June 2022 in <a href="./category/article.html">Article</a>
+
+
+    </p>
+  </header>
+
+
+  <div>
+    <h3>Simulating Playing Harmonics</h3>
+<p><img alt="Photo" src="./distributed images/ModeShapes.png"></p>
+<p>This is an extension of the previous work titled 'Second Simulation: Guitar 
+String'.  The idea here is to understand what happens when 'harmonics' are 
+played on a guitar.  This is done by lightly holding a finger on a string at 
+exact locations, plucking the string, and removing the finger.  The result is 
+a higher pitched sound instead of just plucking and open string.</p>
+<p>We can gather what is happening from the mode shapes.  The location of where 
+to the finger to generate harmonics is very precise: over the 12th fret (half 
+the length of the string), over the 7th fret (a third of the length), and over 
+the fifth fret (a fourth of the length).  If these locations are damping the 
+strings, then the fundamental frequency and the lower overtones are muted.</p>
+<p>Any harmonics removes the fundamental mode (mode 1).  When harmonics is used 
+halfway on the string, the second mode is allowed to sound since we're at the 
+mode's node with zero velocity.  However, the third node is muted, while the 
+fourth is allowed to sound.</p>
+<p>When harmoincs is applied one third of the way on the string, the third mode 
+is allowed to sound while mode 2 and mode 1 have velocites there that damp out
+their sound.</p>
+<p>We wish to simulate this event phenomenon.</p>
+<h3>Modeling</h3>
+<p>The same model that was developed for the previous string plucking simulation 
+can be used.  However, the bond graph is adjusted to include not only damping 
+for each mode shape, but also damping at a location <span class="math">\(x_2\)</span>.</p>
+<p><img alt="Photo" src="./distributed images/BondGraph2.png"></p>
+<p>The bond graph above shows the resistance <span class="math">\(R\)</span> which will represent a finger 
+touching the string at a location <span class="math">\(x_2\)</span>. The resistance is shown as linear 
+(the colon and the resistance coefficient b), but will be applied only for a 
+small amount of time.  This makes the system nonlinear.</p>
+<p>If one follows the causality once following the procedure, we find that the 
+damping force is applied to each mode momentum transoformed through their 
+appropriate mode shape.  The velocity that passes through the damping is 
+dependent on a combination of each the mode shape velocities.  </p>
+<h3>Equations</h3>
+<p>The equations are not too different.  As mentioned in the previous section, 
+the combination of flows from each mode shape needs to be determined.  The 
+equations turn out to be as follows:</p>
+<h4><span class="math">\(\dot{p}_n = -k_n q_n -b_n \frac{p_n}{m_n} +  F_1(t)Y_n(x1) + F_d Y_n(x2)\)</span></h4>
+<h4><span class="math">\(\dot{q}_n = \frac{p_n}{m_n}\)</span></h4>
+<p>where</p>
+<h3><span class="math">\(F_d = -b(\sum_{n=1}^{N} Y_n(x2) \frac{p_n}{m_n})\)</span></h3>
+<h3>Simulation 1: Harmonics at the 12th fret</h3>
+<p>The simulations will use the same parameters as mentioned in a previous 
+article.  The damping ratio for all the modes is <span class="math">\(\zeta=0.0005\)</span>.  The damping 
+from the finger, however, is <span class="math">\(\zeta_{Harmonic} = 0.02\)</span>.  The damping 
+coefficient is calculated based on the modal mass and modal natural frequency 
+of the first mode.</p>
+<p>As a reminder, the dampned string without harmonics sounds like the sound file
+below.</p>
+<p><a href="./distributed audio/ThirtyModesCombinedDamped.wav">Combined</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesCombinedDamped.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p><a href="./distributed audio/ThirtyModesHarmonicHalf.wav">Harmoinic Half</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicHalf.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<h3>Simulation 2: Harmonics at the 7th fret</h3>
+<p><a href="./distributed audio/ThirtyModesHarmonicThird.wav">Harmoinic Third</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicThird.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<h3>Simulation 1: Harmonics at the 5th fret</h3>
+<p><a href="./distributed audio/ThirtyModesHarmonicFourth1.wav">Harmoinic Fourth 1</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicFourth1.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<p><a href="./distributed audio/ThirtyModesHarmonicFourth2.wav">Harmoinic Fourth 2</a></p>
+<p><audio controls><source src="https://jonloyola.github.io/distributed%20audio/ThirtyModesHarmonicFourth2.wav" type="audio/wav">Your browser does not support the audio element.</audio></p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+
+    var configscript = document.createElement('script');
+    configscript.type = 'text/x-mathjax-config';
+    configscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'none' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        availableFonts: ['STIX', 'TeX']," +
+        "        preferredFont: 'STIX'," +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(configscript);
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+  </div>
+  <div class="tag-cloud">
+    <p>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  2022</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Jonathan Loyola ",
+  "url" : ".",
+  "image": "/images/me.jpg",
+  "description": ""
+}
+</script>
+
+</body>
+</html>

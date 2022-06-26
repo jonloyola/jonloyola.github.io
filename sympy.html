@@ -91,7 +91,7 @@ symbolic libraries/packages.  </p>
 motion can be derived procedurally in order to have a set of first order ODEs 
 such that all of the derivatives are only dependent on the states, inputs, and 
 time, i.e.</p>
-<p><span class="math">\(\dot{x} = f(x,u,t)\)</span></p>
+<h3><span class="math">\(\dot{x} = f(x,u,t)\)</span></h3>
 <p>However, sometimes its easier to write equations in terms of intermediate variables
 such as forces or velocities that show up often.  To get a final state space 
 matrix, eventually one would need to susbsitute and create the matrix by hand. 
@@ -182,7 +182,7 @@ w, v = eig(Alam(parValues))
 <h3>Derivative Causality</h3>
 <p>Sometimes in the modeling decisions made, derviative causality needs to be 
 dealt with.  This generates implicit equations that must be dealt with.</p>
-<p><span class="math">\(\dot{x} = f(x,u,t,\dot{x})\)</span></p>
+<h3><span class="math">\(\dot{x} = f(x,u,t,\dot{x})\)</span></h3>
 <p>The equations can be dealt numerically in the solver by using an implicit 
 solver.  Another approach if the equations are not too complicated is to use 
 a symbolic solver.  We'll try this with the trailer simulation where we assume 
