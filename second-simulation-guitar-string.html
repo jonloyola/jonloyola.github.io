@@ -155,7 +155,7 @@ particular two force input system, the equations are:</p>
 <h4><span class="math">\(\dot{p}_n = -k_n q_n + F_1(t)Y_n(x1) + F_2(t)Y_n(x2)\)</span></h4>
 <h4><span class="math">\(\dot{q}_n = \frac{p_n}{m_n}\)</span></h4>
 <h1>Input</h1>
-<p>to excite the system, either an initial conditon or a force input can be used.  For
+<p>To excite the system, either an initial conditon or a force input can be used.  For
 a force input, I will use an impuse.  I designed the impulse last shorter than the 
 largest frequency which is associated with the highest mode used.</p>
 <h1>Output</h1>
@@ -165,16 +165,19 @@ is not very powerful.  A guitar or violin has a body that is shaken by the strin
 along with the air inside the body.  </p>
 <p>To simplify the analysis, we assume that the string's acceleration is the primary
 transport for sound.  But its not that easy.  If we pick one specific location
-on the string, we may not hear all the modes because we may be in a node.   The
-sound would be emanating from every point in the string.  Then it would need to be
-combined at the point of the listener.  If we just combined accelerations at different points,
-we may cancel out some symmetry from the mode shapes.</p>
+on the string, we may not hear all the modes because we may be at a node.   </p>
+<p>In reality, sound would be emanating from every point in the string.  Then it would need to be
+combined at the location of the listener.  If we just combined accelerations at different points,
+we may cancel experience some constructive or deconstructive inteference due 
+to symmetry.</p>
 <p>A simple way combine the sounds in a realistic manner is to assume someone is listening
-to the string from some distance away.  First pick a finite number
+to the string from some distance away.  First, we pick a finite number
 of points on the string, then combine it at some location away.  The sound would
-need to travel at the speed of sound.  This may seem like overkill, so we'll see
-if it makes a difference.  This should affect how sound adds up and whether we
-get constructive or destructive interference.</p>
+travel at the speed of sound.  This may seem like overkill, so we'll test this out to see
+if it makes a difference.  This approach should affect how sound adds up.  </p>
+<p><img alt="Photo" src="./distributed images/Listener.png"></p>
+<p>When creating the distribution of points along the string, the boundary 
+conditions should not be included since they will have zero velocity.</p>
 <h1>Simulation 1</h1>
 <h2>Pure Tone</h2>
 <p>The first step in building up this simulation is to simulate just the first mode
